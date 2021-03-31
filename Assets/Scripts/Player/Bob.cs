@@ -1,12 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Platformer2D.Player
 {
     public class Bob : Player
     {
+        [Header("Player Dash")]
+        [SerializeField] protected float dashSpeed;
         [SerializeField] protected float dashTime;
+        [SerializeField] protected bool canMoveWhileDash;
+        [SerializeField] protected float gravityWhileDash;
 
         private float dashTimeLeft;
 
@@ -16,52 +18,19 @@ namespace Platformer2D.Player
             dashTimeLeft = dashTime;
         }
 
-        protected override void Update()
-        {
-            CheckGrounded();
-            MoveHorizontal();
-            Jump();
-
-            if (isDashing)
-            {
-                Dash();
-            }
-        }
-
-        protected override void Jump()
-        {
-            if (input.Jump)
-            {
-                if (canJump)
-                {
-                    rb.velocity = Vector2.up * jumpSpeed;
-                }
-                else
-                {
-                    if (canDash)
-                    {
-                        isDashing = true;
-                    }
-                }
-            }
-        }
-
         protected override void Dash()
         {
+            rb.gravityScale = gravityWhileDash;
             canMove = canMoveWhileDash;
-            canDash = false;
 
             dashTimeLeft -= Time.deltaTime;
 
             Vector2 direction = isFacingRight ? Vector2.right : Vector2.left;
             rb.velocity = direction * dashSpeed;
 
-            rb.gravityScale = gravityWhileDash;
-
             if (dashTimeLeft <= 0 || isTouchingWall)
             {
                 canMove = true;
-                canDash = false;
                 isDashing = false;
                 dashTimeLeft = dashTime;
                 rb.gravityScale = 1f;

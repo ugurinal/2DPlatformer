@@ -1,32 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Platformer2D.PlayerInput;
 
 namespace Platformer2D.Player
 {
     public abstract class Player : MonoBehaviour
     {
-        [Header("Input")]
+        [Header("Player Input")]
         [SerializeField] protected InputData input;
 
         [Header("Player Movement")]
         [SerializeField] protected float movementSpeed;
 
-        [Header("PlayerJump")]
+        [Header("Player Jump")]
         [SerializeField] protected float jumpSpeed;
         [SerializeField] protected LayerMask whatIsGround;
-
-        [Header("Player Dash")]
-        [SerializeField] protected float dashSpeed;
-        [SerializeField] protected float gravityWhileDash;
-        [SerializeField] protected bool canMoveWhileDash;
 
         [Header("player Surroundings")]
         [SerializeField] protected Transform groundTransform;
         [SerializeField] protected float groundCheckRadius;
-        [SerializeField] protected float sideWallCheckDistance;
-        [SerializeField] protected float topWallCheckDistance;
+
+        protected float sideWallCheckDistance;
+        protected float topWallCheckDistance;
 
         protected Rigidbody2D rb;
         protected bool isFacingRight;
@@ -38,15 +32,50 @@ namespace Platformer2D.Player
         protected bool canJump;
         protected bool canDash;
 
+        #region COMMON_METHODS
+
         protected void Start()
         {
             rb = GetComponent<Rigidbody2D>();
-            isFacingRight = !(GetComponent<SpriteRenderer>().flipX);
+
+            sideWallCheckDistance = GetComponent<CapsuleCollider2D>().bounds.extents.x + 0.1f;
+            topWallCheckDistance = GetComponent<CapsuleCollider2D>().bounds.extents.y + 0.1f;
+
+            isFacingRight = transform.localScale.x == 1;
             canMove = true;
-            canDash = true;
         }
 
-        protected abstract void Update();
+        protected void Update()
+        {
+            CheckGrounded();
+            CheckSurroundings();
+            MoveHorizontal();
+            Jump();
+
+            if (isDashing)
+            {
+                Dash();
+            }
+        }
+
+        protected void Jump()
+        {
+            if (input.Jump)
+            {
+                if (canJump)
+                {
+                    rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+                }
+                else
+                {
+                    if (canDash)
+                    {
+                        isDashing = true;
+                        canDash = false;
+                    }
+                }
+            }
+        }
 
         protected void MoveHorizontal()
         {
@@ -64,21 +93,15 @@ namespace Platformer2D.Player
 
             if (input.HorizontalAxis < 0)
             {
-                //GetComponent<SpriteRenderer>().flipX = true;
                 transform.localScale = new Vector3(-1f, 1f, 1f);
                 isFacingRight = false;
             }
             else
             {
-                //GetComponent<SpriteRenderer>().flipX = false;
                 transform.localScale = new Vector3(1f, 1f, 1f);
                 isFacingRight = true;
             }
         }
-
-        protected abstract void Jump();
-
-        protected abstract void Dash();
 
         protected void CheckGrounded()
         {
@@ -103,6 +126,14 @@ namespace Platformer2D.Player
             else
                 isTouchingWall = false;
         }
+
+        #endregion COMMON_METHODS
+
+        #region ABSTRACT_METHODS
+
+        protected abstract void Dash();
+
+        #endregion ABSTRACT_METHODS
 
         private void OnDrawGizmos()
         {
