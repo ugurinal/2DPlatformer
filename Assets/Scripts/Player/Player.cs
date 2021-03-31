@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Platformer2D.PlayerInput;
-using Platformer2D.CharacterInputSystem;
 
 namespace Platformer2D.Player
 {

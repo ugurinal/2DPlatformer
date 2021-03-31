@@ -1,54 +1,48 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Platformer2D.PlayerInput
 {
     public class InputManager : MonoBehaviour
     {
-        private static InputManager _instance;
-        public static InputManager Instance { get; private set; }
-
-        [SerializeField] private InputData _input;
+        [SerializeField] private PlayerControls _inputActions;
+        [SerializeField] private InputData _inputData;
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
+            _inputActions = new PlayerControls();
         }
 
-        public void SetHorizontalAxis(float value)
+        private void OnEnable()
         {
-            _input.HorizontalAxis = value;
+            _inputActions.Enable();
+
+            _inputActions.Player.Jump.started += OnJump;
         }
 
-        public void ResetHorizontalAxis()
+        private void OnDisable()
         {
-            _input.HorizontalAxis = 0;
+            _inputActions.Disable();
+            _inputActions.Player.Jump.started -= OnJump;
         }
 
-        public void SetJumpButton()
+        private void OnJump(InputAction.CallbackContext context)
         {
-            _input.Jump = true;
-            StartCoroutine(ResetJumpButton());
+            _inputData.Jump = true;
+            StartCoroutine(ResetJump());
         }
 
-        private IEnumerator ResetJumpButton()
+        private IEnumerator ResetJump()
         {
             yield return new WaitForEndOfFrame();
-            _input.Jump = false;
+            _inputData.Jump = false;
         }
 
         private void Update()
         {
-            if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer)
-                _input.ProcessInput();
+            _inputData.HorizontalAxis = _inputActions.Player.HorizontalMovement.ReadValue<float>();
         }
     }
 }
