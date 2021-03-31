@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Platformer2D.PlayerInput
 {
@@ -6,12 +8,12 @@ namespace Platformer2D.PlayerInput
     public class InputData : ScriptableObject
     {
         public float HorizontalAxis;
-        public float JumpAxis;
+        public bool Jump;
 
         public void ProcessInput()
         {
             HorizontalAxis = Input.GetAxisRaw("Horizontal");
-            JumpAxis = Input.GetAxis("Jump");
+            Jump = Input.GetButtonDown("Jump");
         }
     }
 }
