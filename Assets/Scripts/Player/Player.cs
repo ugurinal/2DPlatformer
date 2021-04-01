@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using Platformer2D.PlayerInput;
+using Platformer2D.DamageSystem;
 
 namespace Platformer2D.Player
 {
-    public abstract class Player : MonoBehaviour
+    public abstract class Player : MonoBehaviour, IDamagable
     {
         [Header("Player Input")]
         [SerializeField] protected InputData input;
@@ -34,19 +35,18 @@ namespace Platformer2D.Player
 
         #region COMMON_METHODS
 
-        protected void Start()
+        protected virtual void Start()
         {
             rb = GetComponent<Rigidbody2D>();
 
-            sideWallCheckDistance = GetComponent<CapsuleCollider2D>().bounds.extents.x + 0.1f;
-            topWallCheckDistance = GetComponent<CapsuleCollider2D>().bounds.extents.y + 0.1f;
-
-            isFacingRight = transform.localScale.x == 1;
-            canMove = true;
+            InitializePlayer();
         }
 
         protected void Update()
         {
+            if (Time.timeScale == 0f)
+                return;
+
             CheckGrounded();
             CheckSurroundings();
             MoveHorizontal();
@@ -55,6 +55,41 @@ namespace Platformer2D.Player
             if (isDashing)
             {
                 Dash();
+            }
+        }
+
+        protected void InitializePlayer()
+        {
+            sideWallCheckDistance = GetComponent<CapsuleCollider2D>().bounds.extents.x + 0.1f;
+            topWallCheckDistance = GetComponent<CapsuleCollider2D>().bounds.extents.y + 0.1f;
+
+            isFacingRight = transform.localScale.x == 1;
+            canMove = true;
+        }
+
+        protected void MoveHorizontal()
+        {
+            if (!canMove)
+                return;
+
+            rb.velocity = new Vector2(input.HorizontalAxis * movementSpeed, rb.velocity.y);
+            FlipCharacter();
+        }
+
+        protected void FlipCharacter()
+        {
+            if (input.HorizontalAxis == 0)
+                return;
+
+            if (input.HorizontalAxis < 0)
+            {
+                transform.localScale = new Vector3(-1f, 1f, 1f);
+                isFacingRight = false;
+            }
+            else
+            {
+                transform.localScale = new Vector3(1f, 1f, 1f);
+                isFacingRight = true;
             }
         }
 
@@ -74,32 +109,6 @@ namespace Platformer2D.Player
                         canDash = false;
                     }
                 }
-            }
-        }
-
-        protected void MoveHorizontal()
-        {
-            if (!canMove)
-                return;
-
-            rb.velocity = new Vector2(input.HorizontalAxis * movementSpeed, rb.velocity.y);
-            FlipCharacter();
-        }
-
-        private void FlipCharacter()
-        {
-            if (input.HorizontalAxis == 0)
-                return;
-
-            if (input.HorizontalAxis < 0)
-            {
-                transform.localScale = new Vector3(-1f, 1f, 1f);
-                isFacingRight = false;
-            }
-            else
-            {
-                transform.localScale = new Vector3(1f, 1f, 1f);
-                isFacingRight = true;
             }
         }
 
@@ -127,11 +136,18 @@ namespace Platformer2D.Player
                 isTouchingWall = false;
         }
 
+        public void TakeDamage(int amount)
+        {
+            Debug.Log("DAMAGE");
+        }
+
         #endregion COMMON_METHODS
 
         #region ABSTRACT_METHODS
 
         protected abstract void Dash();
+
+        protected abstract void Attack();
 
         #endregion ABSTRACT_METHODS
 

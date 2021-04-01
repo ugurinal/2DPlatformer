@@ -7,12 +7,12 @@ namespace Platformer2D.Player
         [Header("Player Dash")]
         [SerializeField] protected float dashSpeed;
         [SerializeField] protected float dashTime;
-        [SerializeField] protected bool canMoveWhileDash;
         [SerializeField] protected float gravityWhileDash;
+        [SerializeField] protected bool canMoveWhileDash;
 
         private float dashTimeLeft;
 
-        private new void Start()
+        protected override void Start()
         {
             base.Start();
             dashTimeLeft = dashTime;
@@ -35,6 +35,11 @@ namespace Platformer2D.Player
                 dashTimeLeft = dashTime;
                 rb.gravityScale = 1f;
             }
+        }
+
+        protected override void Attack()
+        {
+            Debug.Log("ATTACK");
         }
     }   // alice
 }   // namespace

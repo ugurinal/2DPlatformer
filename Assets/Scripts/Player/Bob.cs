@@ -7,11 +7,6 @@ namespace Platformer2D.Player
         [Header("Player Dash")]
         [SerializeField] protected float dashSpeed;
 
-        private new void Start()
-        {
-            base.Start();
-        }
-
         protected override void Dash()
         {
             canMove = false;
@@ -23,6 +18,11 @@ namespace Platformer2D.Player
                 canMove = true;
                 isDashing = false;
             }
+        }
+
+        protected override void Attack()
+        {
+            Debug.Log("ATTACK");
         }
     }   // bob
 }   // namespace

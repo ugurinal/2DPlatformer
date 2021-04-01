@@ -158,11 +158,11 @@ MonoBehaviour:
   input: {fileID: 11400000, guid: db633c73d4e5fa045bd37c3dd9bd7f8e, type: 2}
   movementSpeed: 5
   jumpSpeed: 18
+  groundTransform: {fileID: 8772765936342493553}
+  groundCheckRadius: 0.2
   whatIsGround:
     serializedVersion: 2
     m_Bits: 512
-  groundTransform: {fileID: 8772765936342493553}
-  groundCheckRadius: 0.2
   dashSpeed: 50
 --- !u!1 &8772765936342493454
 GameObject:
