@@ -6,34 +6,22 @@ namespace Platformer2D.Player
     {
         [Header("Player Dash")]
         [SerializeField] protected float dashSpeed;
-        [SerializeField] protected float dashTime;
-        [SerializeField] protected bool canMoveWhileDash;
-        [SerializeField] protected float gravityWhileDash;
-
-        private float dashTimeLeft;
 
         private new void Start()
         {
             base.Start();
-            dashTimeLeft = dashTime;
         }
 
         protected override void Dash()
         {
-            rb.gravityScale = gravityWhileDash;
-            canMove = canMoveWhileDash;
+            canMove = false;
 
-            dashTimeLeft -= Time.deltaTime;
+            rb.velocity = new Vector2(rb.velocity.x, -1 * dashSpeed); //direction * dashSpeed;
 
-            Vector2 direction = isFacingRight ? Vector2.right : Vector2.left;
-            rb.velocity = direction * dashSpeed;
-
-            if (dashTimeLeft <= 0 || isTouchingWall)
+            if (isGrounded || isTouchingWall)
             {
                 canMove = true;
                 isDashing = false;
-                dashTimeLeft = dashTime;
-                rb.gravityScale = 1f;
             }
         }
     }   // bob

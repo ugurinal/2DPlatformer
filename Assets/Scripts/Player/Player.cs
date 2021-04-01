@@ -13,11 +13,11 @@ namespace Platformer2D.Player
 
         [Header("Player Jump")]
         [SerializeField] protected float jumpSpeed;
-        [SerializeField] protected LayerMask whatIsGround;
 
-        [Header("player Surroundings")]
+        [Header("Player Surroundings")]
         [SerializeField] protected Transform groundTransform;
         [SerializeField] protected float groundCheckRadius;
+        [SerializeField] protected LayerMask whatIsGround;
 
         protected float sideWallCheckDistance;
         protected float topWallCheckDistance;
