@@ -18,7 +18,7 @@ namespace Platformer2D.Player
 
             rb.velocity = new Vector2(rb.velocity.x, -1 * dashSpeed); //direction * dashSpeed;
 
-            if (isGrounded || isTouchingWall)
+            if (isGrounded)
             {
                 canMove = true;
                 isDashing = false;
